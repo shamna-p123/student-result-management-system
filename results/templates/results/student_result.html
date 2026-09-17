@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}My Result{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>My Result</h1>
+    <p><strong>Name:</strong> {{ student.name }}</p>
+    <p><strong>Roll No:</strong> {{ student.roll_number }}</p>
+    {% if student.student_class %}<p><strong>Class:</strong> {{ student.student_class }}</p>{% endif %}
+
+    {% if summary %}
+        <table>
+            <tr><th>Subject</th><th>Marks Obtained</th><th>Max Marks</th></tr>
+            {% for r in results %}
+            <tr>
+                <td>{{ r.subject.name }}</td>
+                <td>{{ r.marks }}</td>
+                <td>{{ r.max_marks }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="summary-box">
+            <div class="summary-item">
+                <div class="value">{{ summary.total_marks|floatformat:0 }}/{{ summary.total_max_marks|floatformat:0 }}</div>
+                <div class="label">Total Marks</div>
+            </div>
+            <div class="summary-item">
+                <div class="value">{{ summary.percentage|floatformat:2 }}%</div>
+                <div class="label">Percentage</div>
+            </div>
+            <div class="summary-item">
+                <div class="value">{{ summary.grade }}</div>
+                <div class="label">Grade</div>
+            </div>
+            <div class="summary-item">
+                <div class="value {% if summary.status == 'Pass' %}pass{% else %}fail{% endif %}">{{ summary.status }}</div>
+                <div class="label">Status</div>
+            </div>
+        </div>
+
+        <a href="{% url 'download_result_pdf' %}" class="btn btn-green">⬇ Download Report Card (PDF)</a>
+    {% else %}
+        <p>Your results haven't been published yet. Please check back later.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>Teacher Dashboard</h1>
+    <a href="{% url 'enter_marks' %}" class="btn btn-green">+ Enter Marks for a Student</a>
+    <a href="{% url 'performance_analytics' %}" class="btn">
+    📊 Performance Analytics
+</a>
+</div>
+<div class="card">
+    <h2>📚 Semester Management</h2>
+
+    {% if semesters %}
+        <p><strong>Available Semesters:</strong></p>
+
+        {% for semester in semesters %}
+            <div class="student-link">
+                <strong>{{ semester.name }}</strong>
+                {% if semester.is_active %}
+                    <span class="pass">Active</span>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No semesters available.</p>
+    {% endif %}
+
+    <a href="#" class="btn btn-green">+ Add New Semester</a>
+</div>
+
+<div class="card">
+    <h2>All Students</h2>
+    {% if students %}
+        {% for student in students %}
+        <div class="student-link">
+            <div>
+                <strong>{{ student.name }}</strong> — Roll No: {{ student.roll_number }}
+                {% if student.student_class %} — Class {{ student.student_class }}{% endif %}
+                {% if student.summary %}
+                    <br>
+                    <span class="{% if student.summary.status == 'Pass' %}pass{% else %}fail{% endif %}">
+                        {{ student.summary.percentage|floatformat:2 }}% — {{ student.summary.grade }} — {{ student.summary.status }}
+                    </span>
+                {% else %}
+                    <br><span style="color:#999;">No marks entered yet</span>
+                {% endif %}
+            </div>
+            <div>
+                <a href="{% url 'enter_marks_existing' student.id %}" class="btn btn-small">Edit Marks</a>
+                {% if student.summary %}
+                <a href="{% url 'download_result_pdf_teacher' student.id %}" class="btn btn-small btn-green">Download PDF</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No students yet. Create student accounts from the Django admin, then enter their marks here.</p>
+    {% endif %}
+</div>
+{% endblock %}

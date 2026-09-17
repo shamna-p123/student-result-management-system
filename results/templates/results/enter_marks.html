@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load result_extras %}
+{% block title %}Enter Marks{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>{% if student %}Edit Marks — {{ student.name }}{% else %}Enter Marks{% endif %}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if not student %}
+        <label for="roll_number">Student Roll Number</label>
+        <input type="text" id="roll_number" name="roll_number" required>
+        {% endif %}
+
+        <label for="name">Student Name</label>
+        <input type="text" id="name" name="name" value="{{ student.name|default:'' }}" {% if not student %}required{% endif %}>
+
+        <label for="student_class">Class</label>
+        <input type="text" id="student_class" name="student_class" value="{{ student.student_class|default:'' }}">
+
+        <h2 style="margin-top:25px;">Marks (out of 100 each)</h2>
+        <table>
+            <tr><th>Subject</th><th>Marks Obtained</th></tr>
+            {% for subject in subjects %}
+            <tr>
+                <td>{{ subject.name }}</td>
+                <td>
+                    <input type="number" step="0.5" min="0" max="100"
+                           class="marks-input"
+                           name="marks_{{ subject.id }}"
+                           value="{{ existing_marks|get_item:subject.id }}">
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="summary-box">
+            <div class="summary-item">
+                <div class="value" id="preview-total">0</div>
+                <div class="label">Live Total (unsaved)</div>
+            </div>
+            <div class="summary-item">
+                <div class="value" id="preview-percentage">0%</div>
+                <div class="label">Live Percentage</div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-green">Save Marks</button>
+    </form>
+</div>
+
+<script>
+    const inputs = document.querySelectorAll(".marks-input");
+    function updatePreview() {
+        let total = 0, max = 0;
+        inputs.forEach(i => {
+            const val = parseFloat(i.value);
+            total += isNaN(val) ? 0 : val;
+            max += 100;
+        });
+        document.getElementById("preview-total").innerText = total;
+        const pct = max ? ((total / max) * 100).toFixed(2) : 0;
+        document.getElementById("preview-percentage").innerText = pct + "%";
+    }
+    inputs.forEach(i => i.addEventListener("input", updatePreview));
+    updatePreview();
+</script>
+{% endblock %}
