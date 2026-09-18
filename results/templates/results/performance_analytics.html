@@ -3,71 +3,205 @@
 {% block title %}Performance Analytics{% endblock %}
 
 {% block content %}
+<style>
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 25px 0;
+}
+
+.analytics-stat-card {
+    position: relative;
+    width: auto;
+    top: auto;
+    right: auto;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e4e9f3;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(36, 51, 91, 0.08);
+    text-align: center;
+    z-index: 1;
+}
+
+.analytics-stat-card h3 {
+    margin: 0 0 10px;
+}
+
+.analytics-stat-card h2 {
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .analytics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 
 <div class="card">
     <h1>Performance Analytics Dashboard</h1>
     <p>Overall performance analysis of MCA students</p>
 </div>
 
+<!-- ================= SUMMARY CARDS ================= -->
+
 <div class="analytics-grid">
 
-    <div class="analytics-card">
+    <div class="analytics-stat-card">
         <h3>Total Students</h3>
         <h2>{{ total_students }}</h2>
     </div>
 
-    <div class="analytics-card">
+    <div class="analytics-stat-card">
         <h3>Passed Students</h3>
         <h2>{{ passed_students }}</h2>
     </div>
 
-    <div class="analytics-card">
+    <div class="analytics-stat-card">
         <h3>Failed Students</h3>
         <h2>{{ failed_students }}</h2>
     </div>
 
-    <div class="analytics-card">
+    <div class="analytics-stat-card">
+        <h3>Pass Percentage</h3>
+        <h2>{{ pass_percentage }}%</h2>
+    </div>
+
+    <div class="analytics-stat-card">
         <h3>Class Average</h3>
         <h2>{{ class_average }}%</h2>
     </div>
 
-    <div class="analytics-card">
+    <div class="analytics-stat-card">
         <h3>Highest Percentage</h3>
         <h2>{{ highest_percentage }}%</h2>
     </div>
 
-    <div class="analytics-card">
-        <h3>Lowest Percentage</h3>
-        <h2>{{ lowest_percentage }}%</h2>
-    </div>
-
 </div>
 
+
+<!-- ================= PASS / FAIL ANALYSIS ================= -->
+
 <div class="card">
-    <h2>Subject-wise Average Marks</h2>
+    <h2>Pass / Fail Analysis</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Number of Students</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>Passed</td>
+                <td>{{ passed_students }}</td>
+            </tr>
+
+            <tr>
+                <td>Failed</td>
+                <td>{{ failed_students }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<!-- ================= GRADE DISTRIBUTION ================= -->
+
+<div class="card">
+    <h2>Grade Distribution</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Grade</th>
+                <th>Number of Students</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for grade, count in grade_data %}
+            <tr>
+                <td>{{ grade }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">No grade data available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<!-- ================= SUBJECT ANALYSIS ================= -->
+
+<div class="card">
+    <h2>Subject-wise Performance Analysis</h2>
 
     <table>
         <thead>
             <tr>
                 <th>Subject</th>
                 <th>Average Marks</th>
+                <th>Passed</th>
+                <th>Failed</th>
             </tr>
         </thead>
 
-       {% for name, average in subject_data %}
-    <tr>
-        <td>{{ name }}</td>
-        <td>{{ average }}/60</td>
-    </tr>
-{% endfor %}
+        <tbody>
+
+            {% for subject in subject_data %}
+
+            <tr>
+                <td>{{ subject.name }}</td>
+
+                <td>
+                    {{ subject.average }}/60
+                </td>
+
+                <td>
+                    {{ subject.passed }}
+                </td>
+
+                <td>
+                    {{ subject.failed }}
+                </td>
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="4">
+                    No subject data available.
+                </td>
+            </tr>
+
+            {% endfor %}
+
         </tbody>
     </table>
 </div>
+
+
+<!-- ================= STUDENT PERFORMANCE ================= -->
 
 <div class="card">
     <h2>Student Performance</h2>
 
     <table>
+
         <thead>
             <tr>
                 <th>Roll Number</th>
@@ -79,23 +213,47 @@
         </thead>
 
         <tbody>
+
             {% for student in students %}
+
             <tr>
-                <td>{{ student.roll_number }}</td>
-                <td>{{ student.name }}</td>
+
+                <td>
+                    {{ student.roll_number }}
+                </td>
+
+                <td>
+                    {{ student.name }}
+                </td>
 
                 {% if student.summary %}
-                    <td>{{ student.summary.percentage|floatformat:2 }}%</td>
-                    <td>{{ student.summary.grade }}</td>
-                    <td>{{ student.summary.status }}</td>
+
+                    <td>
+                        {{ student.summary.percentage|floatformat:2 }}%
+                    </td>
+
+                    <td>
+                        {{ student.summary.grade }}
+                    </td>
+
+                    <td>
+                        {{ student.summary.status }}
+                    </td>
+
                 {% else %}
+
                     <td>-</td>
                     <td>-</td>
                     <td>-</td>
+
                 {% endif %}
+
             </tr>
+
             {% endfor %}
+
         </tbody>
+
     </table>
 </div>
 

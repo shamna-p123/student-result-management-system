@@ -229,41 +229,105 @@ def performance_analytics(request):
     students = Student.objects.select_related("summary").all()
     summaries = ResultSummary.objects.select_related("student").all()
 
+    # ---------- OVERALL SUMMARY ----------
+
     total_students = students.count()
     passed_students = summaries.filter(status="Pass").count()
     failed_students = summaries.filter(status="Fail").count()
 
-    percentages = [s.percentage for s in summaries]
+    pass_percentage = (
+        (passed_students / total_students) * 100
+        if total_students > 0 else 0
+    )
 
-    class_average = sum(percentages) / len(percentages) if percentages else 0
+    percentages = [
+        s.percentage for s in summaries
+        if s.percentage is not None
+    ]
+
+    class_average = (
+        sum(percentages) / len(percentages)
+        if percentages else 0
+    )
+
     highest_percentage = max(percentages) if percentages else 0
     lowest_percentage = min(percentages) if percentages else 0
 
-    # Subject-wise average marks
+    # ---------- GRADE DISTRIBUTION ----------
+
+    grade_distribution = {}
+
+    for summary in summaries:
+        grade = summary.grade or "N/A"
+
+        if grade not in grade_distribution:
+            grade_distribution[grade] = 0
+
+        grade_distribution[grade] += 1
+
+    grade_data = sorted(grade_distribution.items())
+
+    # ---------- SUBJECT-WISE ANALYSIS ----------
+
     subjects = Subject.objects.all()
-    subject_names = []
-    subject_averages = []
+
+    subject_data = []
+    subject_chart_data = []
+    subject_pass_fail_data = []
 
     for subject in subjects:
+
         results = Result.objects.filter(subject=subject)
 
-        if results.exists():
-            average = sum(r.marks for r in results) / results.count()
-        else:
-            average = 0
+        total_marks = sum(r.marks for r in results)
+        result_count = results.count()
 
-        subject_names.append(subject.name)
-        subject_averages.append(round(average, 2))
-        subject_data = zip(subject_names, subject_averages)
+        average = (
+            total_marks / result_count
+            if result_count > 0 else 0
+        )
+
+        # Pass mark = 30 out of 60
+        passed = results.filter(marks__gte=30).count()
+        failed = results.filter(marks__lt=30).count()
+
+        subject_data.append({
+            "name": subject.name,
+            "average": round(average, 2),
+            "passed": passed,
+            "failed": failed,
+        })
+
+        subject_chart_data.append({
+            "name": subject.name,
+            "average": round(average, 2),
+        })
+
+        subject_pass_fail_data.append({
+            "name": subject.name,
+            "passed": passed,
+            "failed": failed,
+        })
 
     context = {
+        # Overall statistics
         "total_students": total_students,
         "passed_students": passed_students,
         "failed_students": failed_students,
+        "pass_percentage": round(pass_percentage, 2),
         "class_average": round(class_average, 2),
         "highest_percentage": round(highest_percentage, 2),
         "lowest_percentage": round(lowest_percentage, 2),
+
+        # Grade analysis
+        "grade_data": grade_data,
+
+        # Subject analysis
         "subject_data": subject_data,
+        "subject_chart_data": subject_chart_data,
+        "subject_pass_fail_data": subject_pass_fail_data,
+
+        # Student analysis
         "students": students,
     }
 

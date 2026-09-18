@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Result Management System{% endblock %}
+
+{% block content %}
+
+<div class="final-home-page">
+
+    <!-- NAVBAR -->
+    <nav class="final-navbar">
+
+        <div class="final-brand">
+            <div class="brand-icon">🎓</div>
+
+            <div>
+                <strong>Student Result</strong>
+                <span>Management System</span>
+            </div>
+        </div>
+
+        <div class="final-navigation">
+            <a href="#home">Home</a>
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+
+            <a href="{% url 'login' %}" class="final-login">
+                Login →
+            </a>
+        </div>
+
+    </nav>
+
+
+    <!-- HERO -->
+    <section class="final-hero" id="home">
+
+        <div class="final-hero-content">
+
+            <div class="final-small-label">
+                MCA ACADEMIC PORTAL
+            </div>
+
+            <h1>
+                Student Result
+                <span>Management System</span>
+            </h1>
+
+            <p>
+                A modern academic platform designed to manage student
+                results, semester records, marks and performance analytics
+                in a simple and organized way.
+            </p>
+
+            <div class="final-buttons">
+
+                <a href="{% url 'login' %}" class="final-primary-btn">
+                    Login to Portal →
+                </a>
+
+                <a href="#features" class="final-outline-btn">
+                    Explore Features
+                </a>
+
+            </div>
+
+            <div class="final-stat-row">
+
+                <div class="final-stat">
+                    <strong>61+</strong>
+                    <span>Students</span>
+                </div>
+
+                <div class="final-stat">
+                    <strong>7</strong>
+                    <span>Subjects</span>
+                </div>
+
+                <div class="final-stat">
+                    <strong>100%</strong>
+                    <span>Digital</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACADEMIC ILLUSTRATION -->
+        <div class="final-illustration">
+
+            <div class="illustration-circle"></div>
+
+            <!-- ANALYTICS CARD -->
+            <div class="analytics-card">
+
+                <div class="analytics-title">
+                    <span>Performance</span>
+                    <small>Semester 1</small>
+                </div>
+
+                <div class="analytics-bars">
+                    <i class="height-1"></i>
+                    <i class="height-2"></i>
+                    <i class="height-3"></i>
+                    <i class="height-4"></i>
+                    <i class="height-5"></i>
+                    <i class="height-6"></i>
+                </div>
+
+            </div>
+
+
+            <!-- GRADUATION CAP -->
+            <div class="cap-shape">
+
+                <div class="cap-top"></div>
+                <div class="cap-board"></div>
+                <div class="cap-tassel"></div>
+
+            </div>
+
+
+            <!-- BOOKS -->
+            <div class="illustration-books">
+
+                <div class="ill-book ill-book-1">
+                    <span>ACADEMIC</span>
+                </div>
+
+                <div class="ill-book ill-book-2">
+                    <span>RESULTS</span>
+                </div>
+
+                <div class="ill-book ill-book-3">
+                    <span>SEMESTER</span>
+                </div>
+
+            </div>
+
+
+            <!-- DOCUMENT -->
+            <div class="document-card">
+
+                <div class="document-top"></div>
+
+                <div class="document-lines">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div class="document-check">
+                    ✓
+                </div>
+
+            </div>
+
+
+            <!-- SMALL DECORATIONS -->
+
+            <div class="floating-dot dot-one"></div>
+            <div class="floating-dot dot-two"></div>
+            <div class="floating-dot dot-three"></div>
+
+            <div class="star-decoration">✦</div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FEATURES -->
+    <section class="final-features" id="features">
+
+        <div class="final-section-heading">
+
+            <span>CORE FEATURES</span>
+
+            <h2>
+                Everything You Need in One Place
+            </h2>
+
+            <p>
+                Manage student academic information and results
+                efficiently through a single platform.
+            </p>
+
+        </div>
+
+
+        <div class="final-feature-grid">
+
+            <div class="final-feature-card">
+
+                <div class="feature-circle blue">
+                    👥
+                </div>
+
+                <h3>Student Management</h3>
+
+                <p>
+                    Add and manage student details and academic records
+                    easily.
+                </p>
+
+            </div>
+
+
+            <div class="final-feature-card">
+
+                <div class="feature-circle green">
+                    ✓
+                </div>
+
+                <h3>Result Management</h3>
+
+                <p>
+                    Enter marks and automatically calculate percentage,
+                    grade and result status.
+                </p>
+
+            </div>
+
+
+            <div class="final-feature-card">
+
+                <div class="feature-circle purple">
+                    ▥
+                </div>
+
+                <h3>Performance Analytics</h3>
+
+                <p>
+                    Analyze student performance through meaningful
+                    statistics and charts.
+                </p>
+
+            </div>
+
+
+            <div class="final-feature-card">
+
+                <div class="feature-circle orange">
+                    ▣
+                </div>
+
+                <h3>PDF Reports</h3>
+
+                <p>
+                    Generate and view professional student result
+                    reports in PDF format.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ABOUT -->
+    <section class="final-about" id="about">
+
+        <div class="about-visual">
+
+            <div class="about-card">
+
+                <div class="about-card-icon">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>Academic Records</strong>
+                    <span>Organized & Secure</span>
+                </div>
+
+            </div>
+
+
+            <div class="about-card second-about-card">
+
+                <div class="about-card-icon">
+                    %
+                </div>
+
+                <div>
+                    <strong>Automatic Calculation</strong>
+                    <span>Fast & Accurate</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="final-about-content">
+
+            <span>ABOUT THE SYSTEM</span>
+
+            <h2>
+                A Smarter Way to Manage Student Results
+            </h2>
+
+            <p>
+                The Student Result Management System provides teachers
+                with an organized platform to manage students, marks,
+                semesters and academic performance while allowing
+                students to access their results easily.
+            </p>
+
+            <div class="about-checks">
+
+                <div>✓ Automatic grade calculation</div>
+
+                <div>✓ Semester-wise records</div>
+
+                <div>✓ Performance analytics</div>
+
+                <div>✓ Downloadable PDF reports</div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CTA -->
+    <section class="final-cta">
+
+        <div class="cta-left">
+
+            <span>START MANAGING RESULTS</span>
+
+            <h2>
+                Manage Student Results Smarter.
+            </h2>
+
+            <p>
+                Access the academic portal and manage student
+                results efficiently.
+            </p>
+
+        </div>
+
+        <a href="{% url 'login' %}" class="final-cta-button">
+            Login to Portal →
+        </a>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="final-footer">
+
+        <div>
+
+            <strong>
+                🎓 Student Result Management
+            </strong>
+
+            <span>
+                MCA Academic Portal
+            </span>
+
+        </div>
+
+        <p>
+            Student Result Management System
+        </p>
+
+    </footer>
+
+</div>
+
+{% endblock %}
