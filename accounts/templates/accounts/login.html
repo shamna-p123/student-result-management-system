@@ -1,20 +1,136 @@
 {% extends "base.html" %}
-{% block title %}Login{% endblock %}
+
+{% block title %}Login | Student Result Management System{% endblock %}
+
 {% block content %}
-<div class="login-wrapper card">
-    <h1>Login</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required autofocus>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
+<div class="final-login-page">
 
-        <button type="submit" class="btn" style="width:100%;">Login</button>
-    </form>
-    <p style="margin-top:15px; font-size:0.85rem; color:#666;">
-        Teachers and students use the same login form — you'll be sent to the right dashboard automatically.
-    </p>
+    <div class="final-login-container">
+
+        <div class="final-login-info">
+
+            <div class="final-login-brand">
+                <div class="final-login-icon">🎓</div>
+
+                <div>
+                    <strong>Student Result</strong>
+                    <span>Management System</span>
+                </div>
+            </div>
+
+            <span class="final-login-label">
+                MCA ACADEMIC PORTAL
+            </span>
+
+            <h1>
+                Welcome Back
+                <span>to the Portal</span>
+            </h1>
+
+            <p>
+                Access your academic dashboard to manage and view
+                student results, marks, semester records and
+                performance information.
+            </p>
+
+            <div class="final-login-features">
+
+                <div>
+                    <span>✓</span>
+                    <p>Secure academic records</p>
+                </div>
+
+                <div>
+                    <span>✓</span>
+                    <p>Automatic result calculation</p>
+                </div>
+
+                <div>
+                    <span>✓</span>
+                    <p>Easy result management</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="final-login-card">
+
+            <div class="final-login-card-header">
+
+                <div class="login-card-icon">
+                    🔐
+                </div>
+
+                <h2>Login</h2>
+
+                <p>
+                    Sign in to access your academic portal
+                </p>
+
+            </div>
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="final-form-group">
+
+                    <label for="username">
+                        Username
+                    </label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username"
+                        required
+                        autofocus
+                    >
+
+                </div>
+
+                <div class="final-form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                </div>
+
+                <button type="submit" class="final-login-button">
+                    Login to Portal
+                    <span>→</span>
+                </button>
+
+            </form>
+
+            <div class="final-login-note">
+
+                <span>ℹ</span>
+
+                <p>
+                    Teachers and students use the same login form.
+                    You will be redirected to the appropriate
+                    dashboard automatically.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
 {% endblock %}

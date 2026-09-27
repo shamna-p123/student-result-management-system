@@ -1,61 +1,1157 @@
 {% extends "base.html" %}
+
 {% block title %}Teacher Dashboard{% endblock %}
+
 {% block content %}
-<div class="card">
-    <h1>Teacher Dashboard</h1>
-    <a href="{% url 'enter_marks' %}" class="btn btn-green">+ Enter Marks for a Student</a>
-    <a href="{% url 'performance_analytics' %}" class="btn">
-    📊 Performance Analytics
-</a>
-</div>
-<div class="card">
-    <h2>📚 Semester Management</h2>
 
-    {% if semesters %}
-        <p><strong>Available Semesters:</strong></p>
+<style>
+/* =========================================
+   TEACHER DASHBOARD
+   ========================================= */
 
-        {% for semester in semesters %}
-            <div class="student-link">
-                <strong>{{ semester.name }}</strong>
-                {% if semester.is_active %}
-                    <span class="pass">Active</span>
-                {% endif %}
+.teacher-dashboard {
+    display: flex;
+    min-height: calc(100vh - 80px);
+    background: #f7f9fc;
+    margin: -30px;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+/* SIDEBAR */
+
+.dashboard-sidebar {
+    width: 240px;
+    background: #172554;
+    color: white;
+    padding: 28px 18px 28px 48px;
+    flex-shrink: 0;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+.dashboard-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px 30px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 25px;
+}
+
+.dashboard-logo-icon {
+    width: 42px;
+    height: 42px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 21px;
+}
+
+.dashboard-logo strong {
+    display: block;
+    font-size: 14px;
+}
+
+.dashboard-logo span {
+    display: block;
+    font-size: 10px;
+    color: #cbd5e1;
+    margin-top: 3px;
+}
+
+.dashboard-menu-title {
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    padding: 0 12px;
+    margin-bottom: 10px;
+}
+
+.dashboard-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.dashboard-menu a {
+    text-decoration: none;
+    color: #dbe4f2;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 12px 13px;
+    border-radius: 10px;
+
+    font-size: 13px;
+
+    transition: 0.2s;
+}
+
+.dashboard-menu a:hover,
+.dashboard-menu a.active {
+    background: #3155d4;
+    color: white;
+}
+
+.dashboard-menu-icon {
+    width: 20px;
+    text-align: center;
+}
+
+
+/* MAIN AREA */
+
+.dashboard-main {
+    flex: 1;
+    min-width: 0;
+    padding: 30px 35px;
+}
+
+
+/* TOP HEADER */
+
+.dashboard-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.dashboard-top h1 {
+    margin: 0;
+    color: #172554;
+    font-size: 27px;
+}
+
+.dashboard-top p {
+    margin: 6px 0 0;
+    color: #7a8498;
+    font-size: 13px;
+}
+
+.teacher-profile {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.teacher-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+
+    background: #e8edff;
+    color: #3155d4;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 700;
+}
+
+.teacher-profile strong {
+    display: block;
+    color: #263555;
+    font-size: 13px;
+}
+
+.teacher-profile span {
+    color: #8a94a8;
+    font-size: 11px;
+}
+
+
+/* STAT CARDS */
+
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #e7ebf4;
+    border-radius: 16px;
+    padding: 20px;
+
+    box-shadow: 0 8px 25px rgba(23,37,84,0.05);
+}
+
+.stat-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stat-card-icon {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 19px;
+}
+
+.stat-blue {
+    background: #eaf0ff;
+    color: #3155d4;
+}
+
+.stat-green {
+    background: #eaf8f0;
+    color: #16834b;
+}
+
+.stat-red {
+    background: #fff0f0;
+    color: #d33b3b;
+}
+
+.stat-purple {
+    background: #f2edff;
+    color: #7250c8;
+}
+
+.stat-card h3 {
+    margin: 16px 0 4px;
+    color: #172554;
+    font-size: 26px;
+}
+
+.stat-card p {
+    margin: 0;
+    color: #7a8498;
+    font-size: 12px;
+}
+
+
+/* CHART GRID */
+
+.dashboard-chart-grid {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.dashboard-panel {
+    background: white;
+    border: 1px solid #e7ebf4;
+    border-radius: 16px;
+    padding: 22px;
+
+    box-shadow: 0 8px 25px rgba(23,37,84,0.05);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.panel-header h2 {
+    margin: 0;
+    color: #172554;
+    font-size: 17px;
+}
+
+.panel-header span {
+    color: #8a94a8;
+    font-size: 11px;
+}
+
+.chart-container {
+    position: relative;
+    height: 280px;
+}
+
+
+/* BOTTOM GRID */
+
+.dashboard-bottom-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 20px;
+}
+
+
+/* STUDENT TABLE */
+
+.student-table-wrapper {
+    overflow-x: auto;
+}
+
+.student-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.student-table th {
+    text-align: left;
+    padding: 12px 8px;
+
+    color: #8a94a8;
+    font-size: 10px;
+    font-weight: 700;
+
+    border-bottom: 1px solid #edf0f5;
+}
+
+.student-table td {
+    padding: 13px 8px;
+
+    color: #475569;
+    font-size: 12px;
+
+    border-bottom: 1px solid #f0f2f6;
+}
+
+.student-table tr:last-child td {
+    border-bottom: none;
+}
+
+.student-name {
+    color: #263555;
+    font-weight: 600;
+}
+
+.status-pass {
+    color: #16834b;
+    background: #eaf8f0;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.status-fail {
+    color: #d33b3b;
+    background: #fff0f0;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.table-action {
+    color: #3155d4;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+
+/* QUICK ACTIONS */
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.quick-action {
+    text-decoration: none;
+
+    background: #f7f9fc;
+    border: 1px solid #e7ebf4;
+    border-radius: 12px;
+
+    padding: 15px;
+
+    color: #263555;
+
+    transition: 0.2s;
+}
+
+.quick-action:hover {
+    border-color: #3155d4;
+    transform: translateY(-2px);
+}
+
+.quick-action-icon {
+    font-size: 19px;
+    margin-bottom: 8px;
+}
+
+.quick-action strong {
+    display: block;
+    font-size: 12px;
+}
+
+.quick-action span {
+    color: #8a94a8;
+    font-size: 10px;
+}
+
+
+/* SEMESTER */
+
+.semester-box {
+    margin-top: 20px;
+    padding: 16px;
+
+    background: #f5f7ff;
+    border-radius: 12px;
+}
+
+.semester-box-title {
+    color: #7a8498;
+    font-size: 10px;
+    margin-bottom: 7px;
+}
+
+.semester-name {
+    color: #172554;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.active-badge {
+    display: inline-block;
+    margin-left: 7px;
+
+    padding: 4px 8px;
+
+    border-radius: 20px;
+
+    background: #eaf8f0;
+    color: #16834b;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+
+    .dashboard-sidebar {
+        width: 205px;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-chart-grid,
+    .dashboard-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 750px) {
+
+    .teacher-dashboard {
+        display: block;
+        margin: -20px;
+    }
+
+    .dashboard-sidebar {
+        width: auto;
+    }
+
+    .dashboard-menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .dashboard-main {
+        padding: 25px 18px;
+    }
+
+    .dashboard-top {
+        align-items: flex-start;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+
+<div class="teacher-dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+
+        <div class="dashboard-logo">
+
+            <div class="dashboard-logo-icon">
+                🎓
             </div>
-        {% endfor %}
-    {% else %}
-        <p>No semesters available.</p>
-    {% endif %}
 
-    <a href="#" class="btn btn-green">+ Add New Semester</a>
-</div>
-
-<div class="card">
-    <h2>All Students</h2>
-    {% if students %}
-        {% for student in students %}
-        <div class="student-link">
             <div>
-                <strong>{{ student.name }}</strong> — Roll No: {{ student.roll_number }}
-                {% if student.student_class %} — Class {{ student.student_class }}{% endif %}
-                {% if student.summary %}
-                    <br>
-                    <span class="{% if student.summary.status == 'Pass' %}pass{% else %}fail{% endif %}">
-                        {{ student.summary.percentage|floatformat:2 }}% — {{ student.summary.grade }} — {{ student.summary.status }}
-                    </span>
-                {% else %}
-                    <br><span style="color:#999;">No marks entered yet</span>
-                {% endif %}
+                <strong>Student Result</strong>
+                <span>Management System</span>
             </div>
-            <div>
-                <a href="{% url 'enter_marks_existing' student.id %}" class="btn btn-small">Edit Marks</a>
-                {% if student.summary %}
-                <a href="{% url 'download_result_pdf_teacher' student.id %}" class="btn btn-small btn-green">Download PDF</a>
-                {% endif %}
-            </div>
+
         </div>
-        {% endfor %}
-    {% else %}
-        <p>No students yet. Create student accounts from the Django admin, then enter their marks here.</p>
-    {% endif %}
+
+
+        <div class="dashboard-menu-title">
+            MAIN MENU
+        </div>
+
+
+        <nav class="dashboard-menu">
+
+            <a href="{% url 'teacher_dashboard' %}" class="active">
+                <span class="dashboard-menu-icon">▦</span>
+                Dashboard
+            </a>
+
+            <a href="{% url 'enter_marks' %}">
+                <span class="dashboard-menu-icon">✎</span>
+                Enter Marks
+            </a>
+
+            <a href="{% url 'student_list' %}">
+    <span class="dashboard-menu-icon">👥</span>
+    Students
+</a>
+
+            <a href="{% url 'performance_analytics' %}">
+                <span class="dashboard-menu-icon">📊</span>
+                Analytics
+            </a>
+
+            <a href="#semester">
+                <span class="dashboard-menu-icon">📚</span>
+                Semester
+            </a>
+
+            <a href="{% url 'performance_analytics' %}">
+                <span class="dashboard-menu-icon">📄</span>
+                Reports
+            </a>
+
+            <a href="{% url 'logout' %}">
+                <span class="dashboard-menu-icon">↪</span>
+                Logout
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+
+
+        <!-- HEADER -->
+        <div class="dashboard-top">
+
+            <div>
+                <h1>Teacher Dashboard</h1>
+
+                <p>
+                    Manage student results and monitor academic performance.
+                </p>
+            </div>
+
+
+            <div class="teacher-profile">
+
+                <div class="teacher-avatar">
+                    {{ user.first_name|default:user.username|slice:":1"|upper }}
+                </div>
+
+                <div>
+                    <strong>
+                        {{ user.first_name|default:user.username }}
+                    </strong>
+
+                    <span>
+                        Teacher
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STAT CARDS -->
+        <section class="dashboard-stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div>
+                        <h3>{{ total_students }}</h3>
+                        <p>Total Students</p>
+                    </div>
+
+                    <div class="stat-card-icon stat-blue">
+                        👥
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div>
+                        <h3>{{ passed_students }}</h3>
+                        <p>Passed Students</p>
+                    </div>
+
+                    <div class="stat-card-icon stat-green">
+                        ✓
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div>
+                        <h3>{{ failed_students }}</h3>
+                        <p>Failed Students</p>
+                    </div>
+
+                    <div class="stat-card-icon stat-red">
+                        !
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-card-top">
+
+                    <div>
+                        <h3>{{ class_average|floatformat:2 }}%</h3>
+                        <p>Class Average</p>
+                    </div>
+
+                    <div class="stat-card-icon stat-purple">
+                        %
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- CHARTS -->
+        <section class="dashboard-chart-grid">
+
+
+            <!-- SUBJECT BAR CHART -->
+            <div class="dashboard-panel">
+
+                <div class="panel-header">
+
+                    <h2>Subject-wise Average Marks</h2>
+
+                    <span>Out of 60</span>
+
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="subjectChart"></canvas>
+                </div>
+
+            </div>
+
+
+            <!-- PERFORMANCE DOUGHNUT -->
+            <div class="dashboard-panel">
+
+                <div class="panel-header">
+
+                    <h2>Student Performance</h2>
+
+                    <span>Distribution</span>
+
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- BOTTOM -->
+        <section class="dashboard-bottom-grid">
+
+
+            <!-- RECENT STUDENTS -->
+            <div class="dashboard-panel" id="students">
+
+                <div class="panel-header">
+
+                    <h2>Recent Students</h2>
+
+                    <span>
+                        {{ total_students }} total
+                    </span>
+
+                </div>
+
+
+                <div class="student-table-wrapper">
+
+                    {% if recent_students %}
+
+                    <table class="student-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Student</th>
+                                <th>Roll No.</th>
+                                <th>Percentage</th>
+                                <th>Grade</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                        {% for student in recent_students %}
+
+                            <tr>
+
+                                <td>
+                                    <span class="student-name">
+                                        {{ student.name }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ student.roll_number }}
+                                </td>
+
+                                <td>
+
+                                    {% if student.summary %}
+
+                                        {{ student.summary.percentage|floatformat:2 }}%
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    {% if student.summary %}
+
+                                        {{ student.summary.grade }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    {% if student.summary %}
+
+                                        {% if student.summary.status == "Pass" %}
+
+                                            <span class="status-pass">
+                                                Pass
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="status-fail">
+                                                Fail
+                                            </span>
+
+                                        {% endif %}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    <a
+                                        href="{% url 'enter_marks_existing' student.id %}"
+                                        class="table-action"
+                                    >
+                                        Edit
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                    {% else %}
+
+                        <p style="color:#7a8498;">
+                            No students available.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- QUICK ACTIONS -->
+            <div class="dashboard-panel">
+
+                <div class="panel-header">
+
+                    <h2>Quick Actions</h2>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+
+                    <a
+                        href="{% url 'enter_marks' %}"
+                        class="quick-action"
+                    >
+
+                        <div class="quick-action-icon">
+                            ✎
+                        </div>
+
+                        <strong>Enter Marks</strong>
+
+                        <span>
+                            Add student results
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="{% url 'performance_analytics' %}"
+                        class="quick-action"
+                    >
+
+                        <div class="quick-action-icon">
+                            📊
+                        </div>
+
+                        <strong>Analytics</strong>
+
+                        <span>
+                            View performance
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="#students"
+                        class="quick-action"
+                    >
+
+                        <div class="quick-action-icon">
+                            👥
+                        </div>
+
+                        <strong>Students</strong>
+
+                        <span>
+                            View student list
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="#semester"
+                        class="quick-action"
+                    >
+
+                        <div class="quick-action-icon">
+                            📚
+                        </div>
+
+                        <strong>Semester</strong>
+
+                        <span>
+                            View semesters
+                        </span>
+
+                    </a>
+
+
+                </div>
+
+
+                <!-- SEMESTER -->
+                <div class="semester-box" id="semester">
+
+                    <div class="semester-box-title">
+                        CURRENT SEMESTER
+                    </div>
+
+
+                    {% if semesters %}
+
+                        {% for semester in semesters %}
+
+                            {% if semester.is_active %}
+
+                                <div class="semester-name">
+
+                                    {{ semester.name }}
+
+                                    <span class="active-badge">
+                                        ACTIVE
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+                        {% empty %}
+
+                            <div class="semester-name">
+                                No semester available
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="semester-name">
+                            No semester available
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
 </div>
+
+
+<!-- CHART.JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{{ subject_chart_data|json_script:"subject-chart-data" }}
+{{ performance_data|json_script:"performance-chart-data" }}
+
+
+<script>
+
+    /* SUBJECT-WISE BAR CHART */
+
+    const subjectData =
+        JSON.parse(
+            document.getElementById(
+                "subject-chart-data"
+            ).textContent
+        );
+
+
+    const subjectLabels =
+    subjectData.map(item => {
+
+        const shortNames = {
+            "Mathematical Foundations for Computing": "MFC",
+            "Digital Fundamentals & Computer Architecture": "DFCA",
+            "Advanced Data Structures": "ADS",
+            "Advanced Software Engineering": "ASE",
+            "Programming Lab": "PL",
+            "Web Programming Lab": "WPL",
+            "Data Structures Lab": "DSL"
+        };
+
+        return shortNames[item.name] || item.name;
+    });
+
+
+    const subjectAverages =
+        subjectData.map(
+            item => item.average
+        );
+
+
+    new Chart(
+        document.getElementById("subjectChart"),
+        {
+            type: "bar",
+
+            data: {
+                labels: subjectLabels,
+
+                datasets: [
+                    {
+                        label: "Average Marks",
+
+                        data: subjectAverages,
+
+                        borderRadius: 7
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 60
+                    },
+
+                    x: {
+                        ticks: {
+                            maxRotation: 35,
+                            minRotation: 20
+                        }
+                    }
+                }
+            }
+        }
+    );
+
+
+    /* STUDENT PERFORMANCE DOUGHNUT */
+
+    const performanceData =
+        JSON.parse(
+            document.getElementById(
+                "performance-chart-data"
+            ).textContent
+        );
+
+
+    new Chart(
+        document.getElementById("performanceChart"),
+        {
+            type: "doughnut",
+
+            data: {
+
+                labels: [
+                    "Excellent",
+                    "Good",
+                    "Average",
+                    "Below Average",
+                    "Failed"
+                ],
+
+                datasets: [
+                    {
+                        data: [
+                            performanceData.excellent,
+                            performanceData.good,
+                            performanceData.average,
+                            performanceData.below_average,
+                            performanceData.failed
+                        ],
+
+                        borderWidth: 2
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                cutout: "65%",
+
+                plugins: {
+
+                    legend: {
+                        position: "bottom"
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+</script>
+
 {% endblock %}

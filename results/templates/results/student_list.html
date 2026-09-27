@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Students | Student Result Management System{% endblock %}
+
+{% block content %}
+
+<style>
+.student-list-page {
+    width: 100%;
+}
+
+.student-list-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.student-list-page .page-header h1 {
+    margin: 0;
+    color: #172554;
+    font-size: 26px;
+}
+
+.student-list-page .page-header p {
+    margin: 6px 0 0;
+    color: #7a8498;
+    font-size: 13px;
+}
+
+.student-list-page .student-card {
+    background: white;
+    border: 1px solid #e7ebf4;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 8px 25px rgba(23,37,84,0.05);
+}
+
+.student-list-page .student-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.student-list-page .student-table th {
+    text-align: left;
+    padding: 12px 10px;
+    color: #8a94a8;
+    font-size: 11px;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.student-list-page .student-table td {
+    padding: 13px 10px;
+    color: #475569;
+    font-size: 12px;
+    border-bottom: 1px solid #f0f2f6;
+}
+
+.student-list-page .student-table tr:last-child td {
+    border-bottom: none;
+}
+
+.student-list-page .student-name {
+    color: #263555;
+    font-weight: 600;
+}
+
+.student-list-page .student-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.student-list-page .student-action {
+    padding: 6px 10px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 600;
+    background: #eaf0ff;
+    color: #3155d4;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-block;
+}
+
+.student-list-page .student-action:hover {
+    background: #3155d4;
+    color: white;
+}
+.student-list-page .delete-action {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.student-list-page .delete-action:hover {
+    background: #3155d4;
+    color: white;
+}
+
+@media (max-width: 900px) {
+    .student-list-page {
+        overflow-x: auto;
+    }
+
+    .student-list-page .student-table {
+        min-width: 800px;
+    }
+}
+</style>
+
+<div class="container">
+
+    <div class="page-header">
+        <div>
+            <h1>All Students</h1>
+            <p>View all students and their result details</p>
+        </div>
+
+        <a href="{% url 'enter_marks' %}" class="btn btn-primary">
+            + Add Student
+        </a>
+    </div>
+
+    <div class="card">
+
+        <div class="card-header">
+            <h2>Student List</h2>
+            <span>{{ students|length }} Students</span>
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student Name</th>
+                        <th>Roll Number</th>
+                        <th>Class</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for student in students %}
+
+                    <tr>
+
+                        <td>{{ forloop.counter }}</td>
+
+                        <td>
+                            <strong>{{ student.name }}</strong>
+                        </td>
+
+                        <td>
+                            {{ student.roll_number }}
+                        </td>
+
+                        <td>
+                            {{ student.student_class }}
+                        </td>
+
+                        <td>
+                            {% if student.summary %}
+                                {{ student.summary.percentage|floatformat:2 }}%
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if student.summary %}
+                                {{ student.summary.grade|default:"-" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if student.summary %}
+                                {{ student.summary.status|default:"-" }}
+                            {% else %}
+                                Not Available
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a href="{% url 'enter_marks_existing' student.id %}"
+                               class="btn btn-small">
+                                Edit
+                            </a>
+
+                            <a href="{% url 'download_result_pdf_teacher' student.id %}"
+                               class="btn btn-small">
+                                PDF
+                            </a>
+                            <form method="post"
+      action="{% url 'delete_student' student.id %}"
+      style="display:inline;"
+      onsubmit="return confirm('Are you sure you want to delete this student?');">
+
+    {% csrf_token %}
+
+    <button type="submit" class="btn btn-small" style="padding: 6px 10px; min-width: 45px;"></button>
+        Delete
+    </button>
+
+</form>
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="8" style="text-align:center;">
+                            No students found.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

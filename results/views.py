@@ -25,16 +25,112 @@ def teacher_dashboard(request):
         messages.error(request, "You are not authorized to view that page.")
         return redirect("post_login_redirect")
 
-    semesters = Semester.objects.all().order_by("name")
+    # Students
     students = Student.objects.select_related("summary").order_by("roll_number")
+
+    # Semesters
+    semesters = Semester.objects.all().order_by("name")
+
+    # Overall statistics
+    total_students = students.count()
+
+    passed_students = ResultSummary.objects.filter(
+        status="Pass"
+    ).count()
+
+    failed_students = ResultSummary.objects.filter(
+        status="Fail"
+    ).count()
+
+    pass_percentage = (
+        (passed_students / total_students) * 100
+        if total_students > 0 else 0
+    )
+
+    percentages = [
+        summary.percentage
+        for summary in ResultSummary.objects.all()
+        if summary.percentage is not None
+    ]
+
+    class_average = (
+        sum(percentages) / len(percentages)
+        if percentages else 0
+    )
+
+    # Subject-wise average marks
+    subjects = Subject.objects.all()
+
+    subject_chart_data = []
+
+    for subject in subjects:
+        results = Result.objects.filter(subject=subject)
+
+        total_marks = sum(result.marks for result in results)
+        result_count = results.count()
+
+        average = (
+            total_marks / result_count
+            if result_count > 0 else 0
+        )
+
+        subject_chart_data.append({
+            "name": subject.name,
+            "average": round(average, 2),
+        })
+
+    # Student performance distribution
+    excellent = 0
+    good = 0
+    average = 0
+    below_average = 0
+    failed = 0
+
+    for summary in ResultSummary.objects.all():
+
+        percentage = summary.percentage or 0
+
+        if percentage >= 90:
+            excellent += 1
+        elif percentage >= 80:
+            good += 1
+        elif percentage >= 70:
+            average += 1
+        elif percentage >= 60:
+            below_average += 1
+        else:
+            failed += 1
+
+    performance_data = {
+        "excellent": excellent,
+        "good": good,
+        "average": average,
+        "below_average": below_average,
+        "failed": failed,
+    }
+
+    # Recent students
+    recent_students = students[:5]
+
+    context = {
+        "students": students,
+        "semesters": semesters,
+        "recent_students": recent_students,
+
+        "total_students": total_students,
+        "passed_students": passed_students,
+        "failed_students": failed_students,
+        "pass_percentage": round(pass_percentage, 2),
+        "class_average": round(class_average, 2),
+
+        "subject_chart_data": subject_chart_data,
+        "performance_data": performance_data,
+    }
 
     return render(
         request,
         "results/teacher_dashboard.html",
-        {
-            "students": students,
-            "semesters": semesters,
-        }
+        context
     )
 
 @login_required
@@ -218,6 +314,49 @@ def enter_marks(request, student_id=None):
             "existing_marks": existing_marks,
         }
     )
+    
+@login_required
+def student_list(request):
+    if not is_teacher(request.user):
+        messages.error(request, "You are not authorized to view that page.")
+        return redirect("post_login_redirect")
+
+    students = Student.objects.select_related("summary").order_by("roll_number")
+
+    return render(
+        request,
+        "results/student_list.html",
+        {
+            "students": students,
+        }
+    )
+
+    
+@login_required
+def delete_student(request, student_id):
+    if not is_teacher(request.user):
+        messages.error(request, "You are not authorized to delete students.")
+        return redirect("post_login_redirect")
+
+    student = get_object_or_404(Student, id=student_id)
+
+    if request.method == "POST":
+        student_name = student.name
+        user = student.user
+
+        student.delete()
+
+        if user:
+            user.delete()
+
+        messages.success(
+            request,
+            f"Student {student_name} has been deleted successfully."
+        )
+
+        return redirect("student_list")
+
+    return redirect("student_list")
 # ---------- PERFORMANCE ANALYTICS ----------
 
 @login_required
