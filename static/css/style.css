@@ -4531,3 +4531,26 @@ body:has(.final-home-page) .container {
         font-size: 32px;
     }
 }
+.delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    min-width: 70px;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    background: #1769c2;
+    color: white !important;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.delete-btn:hover {
+    background: #125aa8;
+    color: white !important;
+}
